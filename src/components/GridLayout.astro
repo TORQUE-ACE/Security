@@ -1,0 +1,256 @@
+---
+---
+
+<style>
+    body {
+        color: aliceblue;
+        font-family: monospace;
+    }
+
+    .grid-container {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        grid-template-rows: repeat(3, 100px);
+        gap: 10px;
+        background-color: black;
+        padding: 20px;
+        height: 100vh;
+    }
+
+    .grid-item {
+        border: 2px solid white;
+        background-color: black;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+    }
+
+    /* CLI Input */
+    .item1 {
+        grid-column: span 2;
+        grid-row: span 2;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 10px;
+    }
+
+    .cli-wrapper {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .cli-container {
+        width: 90%;
+        display: flex;
+        align-items: center;
+        background-color: black;
+        border: 2px solid white;
+        padding: 12px;
+        margin-bottom: 12px;
+        margin-top: 12px;
+    }
+
+    .cli-prefix {
+        color: lime;
+        font-weight: bold;
+        margin-right: 8px;
+        font-size: 1.3rem;
+    }
+
+    .cli-input {
+        background: transparent;
+        border: none;
+        outline: none;
+        color: aliceblue;
+        font-size: 1.4rem;
+        flex-grow: 1;
+        font-family: monospace;
+        caret-color: lime;
+        padding: 12px;
+    }
+
+    .cli-input::placeholder {
+        color: gray;
+    }
+
+    /* Square Go Button */
+    .cli-button {
+        background-color: black;
+        border: 2px solid lime;
+        width: 45px;
+        height: 45px;
+        cursor: pointer;
+        font-size: 1rem;
+        font-weight: bold;
+        font-family: monospace;
+        color: lime;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-left: 8px;
+    }
+
+    .cli-button:hover {
+        background-color: lime;
+        color: black;
+    }
+
+    .item2 {
+        grid-column: span 1;
+        grid-row: span 2;
+        padding: 0;
+        justify-content: center;
+        align-items: center;
+    }
+    
+    .item2 img {
+        width: 100%;
+        height: 100%;
+        object-fit:contain;
+    }
+
+    .item3 {
+        grid-column: span 1;
+        grid-row: span 1;
+        padding: 0;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .item3 img {
+        width: 100%;
+        height: 100%;
+        object-fit: fill;
+    }
+
+    /* Realistic Terminal */
+    .terminal {
+        width: 100%;
+        height: 100%;
+        background-color: black;
+        color: lime;
+        font-family: monospace;
+        padding: 10px;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        align-items: flex-start;
+        overflow-y: auto;
+        white-space: pre-wrap;
+        font-size: 1rem;
+        position: relative;
+    }
+
+    .terminal-output {
+        flex-grow: 1;
+        width: 100%;
+        overflow-y: auto;
+    }
+
+    .terminal-input {
+        display: flex;
+        align-items: center;
+        width: 100%;
+    }
+
+    .terminal-prefix {
+        color: lime;
+        font-weight: bold;
+        margin-right: 8px;
+    }
+
+    .terminal-text {
+        background: transparent;
+        border: none;
+        outline: none;
+        color: aliceblue;
+        font-size: 1rem;
+        font-family: monospace;
+        caret-color: lime;
+        flex-grow: 1;
+    }
+
+    /* Blinking Cursor Effect */
+    @keyframes blink {
+        50% {
+            opacity: 0;
+        }
+    }
+
+    .terminal-cursor {
+        display: inline-block;
+        width: 8px;
+        height: 16px;
+        background-color: lime;
+        animation: blink 0.8s infinite;
+    }
+
+    .item4 {
+        grid-column: span 2;
+        grid-row: span 1;
+    }
+
+    .item5 {
+        grid-column: span 2;
+        grid-row: span 2;
+    }
+
+    .item6{
+        grid-column: span 1;
+        grid-row: span 2;
+    }
+
+
+</style>
+
+<div class="grid-container">
+    <div class="grid-item item1">
+        <div class="cli-wrapper">
+            <div class="cli-container">
+                <span class="cli-prefix">></span>
+                <input type="text" class="cli-input" placeholder="Enter first command...">
+                <button class="cli-button">Go</button>
+            </div>
+        </div>
+        <div class="cli-wrapper">
+            <div class="cli-container">
+                <span class="cli-prefix">></span>
+                <input type="text" class="cli-input" placeholder="Enter second command...">
+                <button class="cli-button">Go</button>
+            </div>
+        </div>
+    </div>
+    <div class="grid-item item2">
+        <img src="/torqueace.png" alt="Grid Image">
+    </div>
+    <div class="grid-item item3">
+        <img src="/image.png" alt="Grid Image">
+    </div>
+
+    <!-- Terminal 1 -->
+    <div class="grid-item item4">
+        X
+    </div>
+
+    <!-- Terminal 2 (Same as Terminal 1) -->
+    <div class="grid-item item5">
+        <div class="terminal" id="terminal1">
+            <div class="terminal-output" id="output1">
+                <div>user@system:~$ <span class="terminal-cursor"></span></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="grid-item item6">
+        <div class="terminal" id="terminal2">
+            <div class="terminal-output" id="output2">
+                <div>nigger@system:~$ <span class="terminal-cursor"></span></div>
+            </div>
+        </div>
+    </div>
+
+</div>
