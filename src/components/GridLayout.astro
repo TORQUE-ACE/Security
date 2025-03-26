@@ -107,12 +107,64 @@
         align-items: center;
     }
     
-    .item2 img {
-        width: 100%;
-        height: 100%;
-        object-fit:contain;
+    .item2 {
+        grid-column: span 1;
+        grid-row: span 2;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 10px;
+        border: 2px solid white;
+    }
+    .drop-zone {
+        width: 90%;
+        height: 100px;
+        border: 2px dashed white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        font-family: monospace;
+        color: aliceblue;
+        cursor: pointer;
     }
 
+    .drop-zone:hover {
+        background-color: rgba(255, 255, 255, 0.1);
+    }
+
+    .file-upload {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 100%;
+    }
+
+    .file-input {
+        background: black;
+        color: aliceblue;
+        border: 2px solid white;
+        padding: 10px;
+        width: 90%;
+        font-family: monospace;
+        text-align: center;
+    }
+
+    .upload-button {
+        margin-top: 10px;
+        background: black;
+        border: 2px solid lime;
+        color: lime;
+        padding: 8px 16px;
+        cursor: pointer;
+        font-family: monospace;
+    }
+
+    .upload-button:hover {
+        background: lime;
+        color: black;
+    }
     .item3 {
         grid-column: span 1;
         grid-row: span 1;
@@ -127,7 +179,6 @@
         object-fit: fill;
     }
 
-    /* Realistic Terminal */
     .terminal {
         width: 100%;
         height: 100%;
@@ -174,7 +225,6 @@
         flex-grow: 1;
     }
 
-    /* Blinking Cursor Effect */
     @keyframes blink {
         50% {
             opacity: 0;
@@ -192,8 +242,29 @@
     .item4 {
         grid-column: span 2;
         grid-row: span 1;
+        display: flex;
+        color: rgb(0, 183, 255);
+        align-items:center;
+        justify-content: center;
+        padding: 10px;
+        font-size: 20px;
+        
     }
 
+    .progress-bar-container {
+        width: 85%;
+        height: 30px;
+        background-color: black;
+        border: 2px solid rgb(0, 183, 255);
+        position: relative;
+    }
+
+    .progress-bar {
+        width: 0%;
+        height: 100%;
+        background: rgb(235, 5, 5);
+        transition: width 0.5s ease-in-out;
+    }
     .item5 {
         grid-column: span 2;
         grid-row: span 2;
@@ -203,10 +274,9 @@
         grid-column: span 1;
         grid-row: span 2;
     }
-
+   
 
 </style>
-
 <div class="grid-container">
     <div class="grid-item item1">
         <div class="cli-wrapper">
@@ -225,32 +295,99 @@
         </div>
     </div>
     <div class="grid-item item2">
-        <img src="/torqueace.png" alt="Grid Image">
+        <div class="drop-zone" id="dropZone">Drag & Drop File Here</div>
     </div>
     <div class="grid-item item3">
         <img src="/image.png" alt="Grid Image">
     </div>
-
-    <!-- Terminal 1 -->
     <div class="grid-item item4">
-        X
+        PROGRESS :&nbsp;&nbsp;&nbsp; 
+        <div class="progress-bar-container">
+            <div class="progress-bar" id="progressBar"></div>
+        </div>
     </div>
-
-    <!-- Terminal 2 (Same as Terminal 1) -->
     <div class="grid-item item5">
         <div class="terminal" id="terminal1">
             <div class="terminal-output" id="output1">
                 <div>user@system:~$ <span class="terminal-cursor"></span></div>
+                <div id="output1">NetworkScanContent</div>
             </div>
         </div>
     </div>
-
     <div class="grid-item item6">
         <div class="terminal" id="terminal2">
             <div class="terminal-output" id="output2">
-                <div>nigger@system:~$ <span class="terminal-cursor"></span></div>
+                <div>user@system:~$ <span class="terminal-cursor"></span></div>
+                <div id="output2">PortScanContent</div>
             </div>
         </div>
     </div>
-
 </div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const socket = new WebSocket("ws://localhost:8080");
+        const dropZone = document.getElementById("dropZone");
+        const progressBar = document.getElementById("progressBar");
+        const cliButtons = document.querySelectorAll(".cli-button");
+        const cliInputs = document.querySelectorAll(".cli-input");
+
+        // Drag & Drop File Upload
+        if (dropZone) {
+            dropZone.addEventListener("dragover", (event) => {
+                event.preventDefault();
+                dropZone.style.backgroundColor = "rgba(255, 255, 255, 0.1)";
+            });
+
+            dropZone.addEventListener("dragleave", () => {
+                dropZone.style.backgroundColor = "black";
+            });
+
+            dropZone.addEventListener("drop", (event) => {
+                event.preventDefault();
+                dropZone.style.backgroundColor = "black";
+
+                const file = event.dataTransfer.files[0];
+                if (!file) {
+                    alert("No file detected!");
+                    return;
+                }
+
+                const reader = new FileReader();
+                reader.onload = function (event) {
+                    progressBar.style.width = "100%";
+                    setTimeout(() => {
+                        progressBar.style.width = "0%";
+                    }, 2000);
+                    socket.send(event.target.result);
+                    alert("File uploaded!");
+                };
+                reader.readAsArrayBuffer(file);
+            });
+        }
+
+        // WebSocket Message Handling
+        socket.onmessage = function (event) {
+            const data = event.data;
+            if (data.startsWith("NetworkScan Output:")) {
+                document.getElementById("output1").innerHTML = `<pre>${data}</pre>`;
+            } else if (data.startsWith("PortScan Output:")) {
+                document.getElementById("output2").innerHTML = `<pre>${data}</pre>`;
+            }
+        };
+
+        // CLI Buttons Event Listener
+        cliButtons.forEach((button, index) => {
+            button.addEventListener("click", () => {
+                const command = cliInputs[index].value.trim();
+                if (command === "network_scan") {
+                    socket.send("network_scan");
+                } else if (command === "port_scan") {
+                    socket.send("port_scan");
+                } else {
+                    alert("Invalid command!");
+                }
+            });
+        });
+    });
+</script>
